@@ -9,6 +9,9 @@ public class Main {
 
         int lastId = 0 ;
 
+        WiseSaying[] wiseSayings = new WiseSaying[100];
+        int wiseSayingsLastIndex = -1;
+
         while (true) {
             System.out.print("명령) ");
             String cmd = scanner.nextLine().trim();
@@ -16,7 +19,16 @@ public class Main {
             if (cmd.equals("종료")) {
                 break;
             }
-            else if (cmd.equals("등록")) {
+            else if (cmd.equals("목록")) {
+                System.out.println("번호 / 작가 / 명언");
+                System.out.println("-------------------------");
+
+                for (int i = wiseSayingsLastIndex; i >= 0; i--) {
+                    WiseSaying wiseSaying = wiseSayings[i];
+
+                    System.out.printf("%d / %s / %s\n" , wiseSaying.id, wiseSaying.author, wiseSaying.content);
+                }
+            } else if (cmd.equals("등록")) {
                 System.out.print("명언) ") ;
                 String wiseSayingContent = scanner.nextLine().trim();
                 System.out.print("작가 : ");
@@ -28,15 +40,9 @@ public class Main {
                 wiseSaying.id = id;
                 wiseSaying.content = wiseSayingContent;
                 wiseSaying.author = wiseSayingAuthor;
-
-                System.out.println("wiseSaying.id : %d" . formatted(wiseSaying.id));
-                System.out.println("wiseSaying.content : %s" . formatted(wiseSaying.content));
-                System.out.println("wiseSaying.author : %s" . formatted(wiseSaying.author));
+                wiseSayings[++wiseSayingsLastIndex] = wiseSaying;
 
                 System.out.println("%d번 명언이 등록되었습니다.". formatted(id));
-
-
-
 
             }
         }

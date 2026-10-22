@@ -3,3 +3,4 @@ public class WiseSaying {
     String content;
     String author;
 }
+

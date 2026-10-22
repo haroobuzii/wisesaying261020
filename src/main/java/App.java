@@ -19,6 +19,10 @@ public  class App {
                 actionList();
             } else if (cmd.equals("등록")) {
                 actionWrite();
+            } else if (cmd.equals("삭제?id=1")) {
+                actionDelete(1);
+            } else if (cmd.equals("삭제?id=3")) {
+                actionDelete(2);
             }
         }
 
@@ -47,6 +51,12 @@ public  class App {
              System.out.println("%d번 명언이 등록되었습니다.".formatted(wiseSaying.id));
          }
 
+         void actionDelete(int id) {
+            delete(id);
+
+                System.out.println("%d번 명언이 삭제되었습니다.".formatted(id));
+         }
+
          int getSize() {
             return wiseSayingsLastIndex + 1;
          }
@@ -72,8 +82,24 @@ public  class App {
 
             return wiseSaying;
 
+     }
 
+     void delete(int id) {
+        int deleteIndex = -1;
 
+        for (int i = 0; i <= wiseSayingsLastIndex; i++) {
+            if (wiseSayings[i].id == id) {
+                deleteIndex = i;
+                break;
+            }
+        }
+        if (deleteIndex == -1) return;
 
+        for (int i = deleteIndex + 1; i <= wiseSayingsLastIndex; i++) {
+            wiseSayings[i - 1] = wiseSayings[i];
+        }
+
+        wiseSayings[wiseSayingsLastIndex] = null;
+        wiseSayingsLastIndex--;
      }
 }

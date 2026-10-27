@@ -3,9 +3,9 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        testRq1();
-//        App app = new App();
-//        app.run();
+//        testRq1();
+        App app = new App();
+        app.run();
     }
     private static void testRq1() {
         Rq rq = new Rq("목록?searchKeywordType=content&searchKeyword = 자바&page=2");

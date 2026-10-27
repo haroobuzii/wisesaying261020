@@ -1,10 +1,15 @@
+import java.util.ArrayList;
+import java.util.List;
+
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public  class App {
     private Scanner scanner = new Scanner(System.in);
     private int lastId = 0;
-    private WiseSaying[] wiseSayings = new WiseSaying[100];
-    private int wiseSayingsLastIndex = -1;
+    private List<WiseSaying> wiseSayings = new ArrayList<>();
 
     public void run() {
         System.out.println("== 명언 앱 ==");
@@ -33,10 +38,10 @@ public  class App {
         System.out.println("번호 / 작가 / 명언");
         System.out.println("--------------------------");
 
-        WiseSaying[] forListWiseSayings = findForList();
+        List<WiseSaying> forListWiseSayings = findForList();
 
         for (WiseSaying wiseSaying : forListWiseSayings) {
-            System.out.printf("%d / %s / %s\n", wiseSaying.id, wiseSaying.author, wiseSaying.content);
+            System.out.printf("%d / %s / %s\n", wiseSaying.getId(), wiseSaying.getAuthor(), wiseSaying.getContent());
         }
     }
 
@@ -48,7 +53,7 @@ public  class App {
 
         WiseSaying wiseSaying = write(content, author);
 
-        System.out.println("%d번 명언이 등록되었습니다.".formatted(wiseSaying.id));
+        System.out.println("%d번 명언이 등록되었습니다.".formatted(wiseSaying.getId()));
     }
 
     private void actionDelete(String cmd) {
@@ -87,37 +92,24 @@ public  class App {
             return;
         }
 
-        System.out.printf("명언(기존) : %s\n", wiseSaying.content);
+        System.out.printf("명언(기존) : %s\n", wiseSaying.getContent());
         System.out.print("명언 : ");
         String content = scanner.nextLine().trim();
 
-        System.out.printf("작가(기존) : %s\n", wiseSaying.author);
+        System.out.printf("작가(기존) : %s\n", wiseSaying.getAuthor());
         System.out.print("작가 : ");
         String author = scanner.nextLine().trim();
 
         modify(wiseSaying, content, author);
     }
-
-    private int getSize() {
-        return wiseSayingsLastIndex + 1;
-    }
-
-    private WiseSaying[] findForList() {
-        WiseSaying[] forListWiseSayings = new WiseSaying[getSize()];
-
-        int forListWiseSayingsIndex = -1;
-
-        for (int i = wiseSayingsLastIndex; i >= 0; i--) {
-            forListWiseSayings[++forListWiseSayingsIndex] = wiseSayings[i];
-        }
-
-        return forListWiseSayings;
+    private List<WiseSaying> findForList() {
+        return wiseSayings.reversed();
     }
 
     private WiseSaying write(String content, String author) {
         WiseSaying wiseSaying = new WiseSaying(++lastId, content, author);
 
-        wiseSayings[++wiseSayingsLastIndex] = wiseSaying;
+        wiseSayings.add(wiseSaying);
 
         return wiseSaying;
 
@@ -125,8 +117,8 @@ public  class App {
 
     private int findIndexById(int id) {
 
-        for (int i = 0; i <= wiseSayingsLastIndex; i++) {
-            if (wiseSayings[i].id == id) {
+        for (int i = 0; i < wiseSayings.size(); i++) {
+            if (wiseSayings.get(i).getId() == id) {
                 return i;
             }
         }
@@ -137,12 +129,12 @@ public  class App {
         int index = findIndexById(id);
 
         if (index == -1) return null;
-        return wiseSayings[index];
+        return wiseSayings.get(index);
     }
 
     private void modify(WiseSaying wiseSaying, String content, String author) {
-        wiseSaying.content = content;
-        wiseSaying.author = author;
+        wiseSaying.setContent(content);
+        wiseSaying.setAuthor(author);
     }
 
     private int delete(int id) {
@@ -150,12 +142,7 @@ public  class App {
 
         if (deleteIndex == -1) return deleteIndex;
 
-        for (int i = deleteIndex + 1; i <= wiseSayingsLastIndex; i++) {
-            wiseSayings[i - 1] = wiseSayings[i];
-        }
-
-        wiseSayings[wiseSayingsLastIndex] = null;
-        wiseSayingsLastIndex--;
+        wiseSayings.remove(deleteIndex);
         return deleteIndex;
     }
 }

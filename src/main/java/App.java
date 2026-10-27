@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public  class App {
     private Scanner scanner = new Scanner(System.in);
@@ -66,9 +67,9 @@ public  class App {
 
         int id = Integer.parseInt(cmdBits[1]);
 
-        int deletedIndex = delete(id);
+        boolean deleted = delete(id);
 
-        if (deletedIndex == -1) {
+        if (!deleted) {
             System.out.println("%d번 명언은 존재하지 않습니다.".formatted(id));
             return;
         }
@@ -116,13 +117,10 @@ public  class App {
     }
 
     private int findIndexById(int id) {
-
-        for (int i = 0; i < wiseSayings.size(); i++) {
-            if (wiseSayings.get(i).getId() == id) {
-                return i;
-            }
-        }
-        return -1;
+        return IntStream.range(0,wiseSayings.size()).filter(
+                index -> wiseSayings.get(index).getId() == id)
+                .findFirst()
+                .orElse(-1);
     }
 
     private WiseSaying findById(int id) {
@@ -137,12 +135,10 @@ public  class App {
         wiseSaying.setAuthor(author);
     }
 
-    private int delete(int id) {
-        int deleteIndex = findIndexById(id);
-
-        if (deleteIndex == -1) return deleteIndex;
-
-        wiseSayings.remove(deleteIndex);
-        return deleteIndex;
+    private boolean delete(int id) {
+        return wiseSayings
+                .removeIf(
+                        wiseSaying ->
+                                wiseSaying.getId() == id);
     }
 }

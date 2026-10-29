@@ -1,8 +1,7 @@
-package domain.wiseSaying.controller;
+package com.back.domain.wiseSaying.controller;
 
 import com.back.Rq;
 import com.back.WiseSaying;
-import domain.wiseSaying.service.WiseSayingService;
 
 
 import java.util.List;

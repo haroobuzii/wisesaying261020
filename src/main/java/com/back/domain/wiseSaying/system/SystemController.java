@@ -1,4 +1,4 @@
-package domain.system.controller;
+package com.back.domain.wiseSaying.system;
 
 public class SystemController {
     public void actionExit() {

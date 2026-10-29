@@ -1,28 +1,32 @@
 
 
+import domain.system.controller.SystemController;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public  class App {
+public class App {
     private final Scanner scanner = new Scanner(System.in);
     private int lastId = 0;
     private final List<WiseSaying> wiseSayings = new ArrayList<>();
 
+    // 진입점 시작
     public void run() {
         System.out.println("== 명언 앱 ==");
+
+        SystemController systemController = new SystemController();
 
         while (true) {
             System.out.print("명령) ");
             String cmd = scanner.nextLine().trim();
-
             Rq rq = new Rq(cmd);
 
             switch (rq.getActionName()) {
                 case "종료" -> {
-                        System.out.println("프로그램이 종료합니다.");
-                        return;
-            }
+                    systemController.actionExit();
+                    return;
+                }
                 case "목록" -> actionList();
                 case "등록" -> actionWrite();
                 case "삭제" -> actionDelete(rq);
@@ -33,7 +37,7 @@ public  class App {
 
     private void actionList() {
         System.out.println("번호 / 작가 / 명언");
-        System.out.println("--------------------------");
+        System.out.println("----------------------");
 
         List<WiseSaying> forListWiseSayings = findForList();
 
@@ -67,14 +71,15 @@ public  class App {
             System.out.println("%d번 명언은 존재하지 않습니다.".formatted(id));
             return;
         }
-            System.out.println("%d번 명언이 삭제되었습니다.".formatted(id));
+
+        System.out.println("%d번 명언이 삭제되었습니다.".formatted(id));
     }
 
     private void actionModify(Rq rq) {
         int id = rq.getParamAsInt("id", -1);
 
         if (id == -1) {
-            System.out.println("id를 숫자로 입력해주세요");
+            System.out.println("id를 숫자로 입력해주세요.");
             return;
         }
 
@@ -95,6 +100,7 @@ public  class App {
 
         modify(wiseSaying, content, author);
     }
+
     private List<WiseSaying> findForList() {
         return wiseSayings.reversed();
     }
@@ -105,7 +111,6 @@ public  class App {
         wiseSayings.add(wiseSaying);
 
         return wiseSaying;
-
     }
 
     private WiseSaying findById(int id) {
@@ -122,7 +127,12 @@ public  class App {
     }
 
     private boolean delete(int id) {
+        // 기존 로직보다 성능은 안 좋지만, 가독성이 좋음
+        // 실무에서는 이런 선택을 하면 안된다.
+        // 하지만 removeIf를 보여주기 위해서 사용함
         return wiseSayings
-                .removeIf(wiseSaying -> wiseSaying.getId() == id);
+                .removeIf(
+                        wiseSaying -> wiseSaying.getId() == id
+                );
     }
 }

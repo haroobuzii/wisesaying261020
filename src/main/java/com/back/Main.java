@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 //        testRq1();
-        App app = new App(new Scanner(System.in));
+        App app = new App(new Scanner(System.in), true);
         app.run();
     }
     private static void testRq1() {

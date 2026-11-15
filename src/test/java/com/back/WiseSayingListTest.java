@@ -1,5 +1,6 @@
 package com.back;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +8,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 // 13단계 검색, 14단계 페이징 통합 테스트
 class WiseSayingListTest {
+    @BeforeEach
+    void beforeEach() {
+        AppTestRunner.clearDb();
+    }
+
     // 목록의 한 줄을 정확히 찾기 위한 정규식 ("1 / ..." 이 "10 / ..." 에 섞여 걸리지 않도록 줄 단위로 비교)
     private static String line(String text) {
         return "(?m)^" + text + "$";

@@ -1,9 +1,15 @@
 package com.back.standard.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public final class TestUtil {
     private static PrintStream originalOut;
@@ -22,6 +28,24 @@ public final class TestUtil {
         captureOut = new PrintStream(bytes, true, StandardCharsets.UTF_8);
         System.setOut(captureOut);
         return bytes;
+    }
+
+    // 폴더를 안의 파일까지 통째로 지운다 (없으면 아무것도 안 함)
+    public static void deleteDir(Path dirPath) {
+        if (!Files.exists(dirPath)) return;
+
+        try (Stream<Path> paths = Files.walk(dirPath)) {
+            paths.sorted(Comparator.reverseOrder()) // 안쪽 파일부터 지워야 폴더를 지울 수 있다
+                    .forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    });
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     // System.out 을 원래 화면 출력으로 되돌린다

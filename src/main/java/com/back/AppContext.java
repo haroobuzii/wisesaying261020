@@ -2,6 +2,7 @@ package com.back;
 
 import com.back.domain.system.controller.SystemController;
 import com.back.domain.wiseSaying.controller.WiseSayingController;
+import com.back.domain.wiseSaying.repository.WiseSayingFileRepository;
 import com.back.domain.wiseSaying.repository.WiseSayingRepository;
 import com.back.domain.wiseSaying.service.WiseSayingService;
 
@@ -22,7 +23,8 @@ public class AppContext {
     // 순서가 중요하다: 서비스는 저장소를, 컨트롤러는 스캐너·서비스를 AppContext 에서 가져간다
     public static void renew(Scanner scanner) {
         AppContext.scanner = scanner;
-        wiseSayingRepository = new WiseSayingRepository();
+        // 저장소 구현체를 여기서 갈아 끼운다 (메모리 → 파일). 컨트롤러·서비스는 바뀌지 않는다
+        wiseSayingRepository = new WiseSayingFileRepository(AppConfig.getDbDirPath());
         wiseSayingService = new WiseSayingService();
         wiseSayingController = new WiseSayingController();
         systemController = new SystemController();

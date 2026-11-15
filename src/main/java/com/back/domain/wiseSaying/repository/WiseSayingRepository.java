@@ -3,18 +3,33 @@ package com.back.domain.wiseSaying.repository;
 import com.back.WiseSaying;
 import com.back.standard.dto.Page;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
-public class WiseSayingRepository {
-    private int lastId = 0;
-    private final List<WiseSaying> wiseSayings = new ArrayList<>();
+// 저장소가 해야 할 일의 "약속"
+// 메모리에 저장하든(WiseSayingMemoryRepository) 파일에 저장하든(WiseSayingFileRepository)
+// 서비스는 이 약속만 보고 쓰기 때문에, 구현체만 갈아 끼우면 된다
+public interface WiseSayingRepository {
+    // 모든 명언 (번호 오름차순)
+    List<WiseSaying> findAll();
+
+    // 새 명언이면 번호를 붙여 저장하고, 기존 명언이면 덮어쓴다
+    void save(WiseSaying wiseSaying);
+
+    WiseSaying findById(int id);
+
+    boolean deleteById(int id);
+
+    // 모든 명언을 하나로 모아 내보내고(빌드), 만들어진 파일 경로를 돌려준다
+    String build();
+
+    default int count() {
+        return findAll().size();
+    }
 
     // 검색 조건에 맞는 명언을 최신순으로 정렬한 뒤, 요청한 페이지 분량만 잘라서 돌려준다
-    public Page<WiseSaying> findForList(String keywordType, String keyword, int page, int pageSize) {
-        List<WiseSaying> filtered = wiseSayings
+    // 저장 방식과 상관없는 로직이라 인터페이스에 한 번만 작성한다
+    default Page<WiseSaying> findForList(String keywordType, String keyword, int page, int pageSize) {
+        List<WiseSaying> filtered = findAll()
                 .reversed()
                 .stream()
                 .filter(wiseSaying -> matches(wiseSaying, keywordType, keyword))
@@ -30,7 +45,7 @@ public class WiseSayingRepository {
     }
 
     // 검색어가 없으면 전부 통과. 있으면 검색타입에 따라 내용 또는 작가에 검색어가 들어 있는지 본다
-    private boolean matches(WiseSaying wiseSaying, String keywordType, String keyword) {
+    private static boolean matches(WiseSaying wiseSaying, String keywordType, String keyword) {
         if (keyword.isBlank()) return true;
 
         return switch (keywordType) {
@@ -38,48 +53,5 @@ public class WiseSayingRepository {
             case "content" -> wiseSaying.getContent().contains(keyword);
             default -> wiseSaying.getContent().contains(keyword) || wiseSaying.getAuthor().contains(keyword);
         };
-    }
-
-    public int count() {
-        return wiseSayings.size();
-    }
-
-    public void save(WiseSaying wiseSaying) {
-        if (wiseSaying.isNew()) {
-            // 최초 저장
-            wiseSaying.setId(++lastId);
-            LocalDateTime now = LocalDateTime.now();
-            wiseSaying.setCreateDate(now);
-            wiseSaying.setModifyDate(now);
-            wiseSayings.add(wiseSaying);
-        } else {
-            // 수정
-            wiseSaying.setModifyDate(LocalDateTime.now());
-        }
-    }
-
-    public WiseSaying findById(int id) {
-        return wiseSayings
-                .stream()
-                .filter(wiseSaying -> wiseSaying.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
-    public boolean deleteById(int id) {
-        int index = findIndexById(id);
-
-        if (index == -1) return false;
-
-        wiseSayings.remove(index);
-
-        return true;
-    }
-
-    private int findIndexById(int id) {
-        return IntStream.range(0, wiseSayings.size())
-                .filter(i -> wiseSayings.get(i).getId() == id)
-                .findFirst()
-                .orElse(-1);
     }
 }

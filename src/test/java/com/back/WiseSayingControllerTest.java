@@ -1,11 +1,18 @@
 package com.back;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class WiseSayingControllerTest {
+    // 매 테스트 전에 테스트 전용 저장 폴더를 비운다 → 테스트 순서와 상관없이 빈 저장소(번호 1부터)로 시작
+    @BeforeEach
+    void beforeEach() {
+        AppTestRunner.clearDb();
+    }
+
     @Test
     @DisplayName("종료")
     void t1() {
@@ -145,15 +152,8 @@ class WiseSayingControllerTest {
     }
 
     @Test
-    @DisplayName("테스트마다 저장소가 초기화된다 - 앱을 새로 실행하면 목록이 비어 있고 번호가 1부터 시작한다")
+    @DisplayName("테스트마다 저장소가 초기화된다 - 새 테스트는 빈 목록·1번부터 시작한다 (재시작 시 유지는 WiseSayingFileTest)")
     void t10() {
-        AppTestRunner.run("""
-                등록
-                현재를 사랑하라.
-                작자미상
-                종료
-                """);
-
         String out = AppTestRunner.run("""
                 목록
                 등록
@@ -162,7 +162,7 @@ class WiseSayingControllerTest {
                 종료
                 """);
 
-        assertThat(out).doesNotContain("현재를 사랑하라.");
+        assertThat(out).doesNotContainPattern("(?m)^\\d+ / ");
         assertThat(out).contains("1번 명언이 등록되었습니다.");
     }
 }

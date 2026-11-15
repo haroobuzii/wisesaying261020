@@ -47,4 +47,8 @@ public class WiseSayingService {
     public boolean delete(int id) {
         return wiseSayingRepository.deleteById(id);
     }
+
+    public String build() {
+        return wiseSayingRepository.build();
+    }
 }

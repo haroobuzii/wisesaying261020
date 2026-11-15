@@ -14,6 +14,12 @@ public class WiseSayingController {
     private final Scanner scanner = AppContext.scanner;
     private final WiseSayingService wiseSayingService = AppContext.wiseSayingService;
 
+    public void actionBuild() {
+        wiseSayingService.build();
+
+        System.out.println("data.json 파일의 내용이 갱신되었습니다.");
+    }
+
     public void actionList(Rq rq) {
         String keywordType = rq.getParam("keywordType", "content");
         String keyword = rq.getParam("keyword", "");

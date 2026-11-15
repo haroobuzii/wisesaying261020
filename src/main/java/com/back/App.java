@@ -6,12 +6,22 @@ import com.back.domain.wiseSaying.controller.WiseSayingController;
 import java.util.Scanner;
 
 public class App {
+    private final Scanner scanner;
+    private final SystemController systemController;
+    private final WiseSayingController wiseSayingController;
+
+    // 입력을 받을 Scanner 를 밖에서 넣어준다
+    // 실제 실행: 키보드(System.in) / 테스트: 문자열
+    public App(Scanner scanner) {
+        AppContext.renew(scanner);
+
+        this.scanner = AppContext.scanner;
+        this.systemController = AppContext.systemController;
+        this.wiseSayingController = AppContext.wiseSayingController;
+    }
+
     public void run() {
         System.out.println("== 명언 앱 ==");
-
-        Scanner scanner = AppContext.scanner;
-        SystemController systemController = AppContext.systemController;
-        WiseSayingController wiseSayingController = AppContext.wiseSayingController;
 
         while (true) {
             System.out.print("명령) ");

@@ -1,0 +1,9 @@
+# MySQL 접속 정보 예시
+# 이 파일을 db.properties 로 복사한 뒤 값을 채우세요. (db.properties 는 .gitignore 에 있어 git 에 올라가지 않습니다)
+# 같은 이름의 환경변수가 있으면 환경변수가 우선합니다.  예) export DB_PASSWORD=...
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=비밀번호를_입력하세요
+DB_NAME=wiseSaying__dev
+DB_NAME_TEST=wiseSaying__test

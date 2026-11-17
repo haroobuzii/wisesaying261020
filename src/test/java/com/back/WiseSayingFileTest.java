@@ -1,5 +1,6 @@
 package com.back;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,15 +11,22 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// 9단계 파일 영속성, 10단계 빌드 통합 테스트
+// 9단계 파일 영속성, 10단계 빌드 통합 테스트 (파일 저장소 구현체 전용)
+// 15단계부터 기본 저장소는 MySQL 이므로, 이 테스트 동안만 파일 저장소로 바꿔서 실행한다
 // AppTestRunner.run 을 두 번 부르는 것 = 프로그램을 껐다가 다시 켜는 것
 class WiseSayingFileTest {
     private Path dbDir;
 
     @BeforeEach
     void beforeEach() {
+        AppConfig.setStorage(AppConfig.Storage.FILE);
         AppTestRunner.clearDb();
         dbDir = Path.of(AppConfig.getDbDirPath());
+    }
+
+    @AfterEach
+    void afterEach() {
+        AppConfig.setStorage(AppConfig.Storage.DB);
     }
 
     private String read(String fileName) throws IOException {

@@ -2,9 +2,11 @@ package com.back;
 
 import com.back.domain.system.controller.SystemController;
 import com.back.domain.wiseSaying.controller.WiseSayingController;
+import com.back.domain.wiseSaying.repository.WiseSayingDbRepository;
 import com.back.domain.wiseSaying.repository.WiseSayingFileRepository;
 import com.back.domain.wiseSaying.repository.WiseSayingRepository;
 import com.back.domain.wiseSaying.service.WiseSayingService;
+import com.back.standard.simpleDb.SimpleDb;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -23,10 +25,36 @@ public class AppContext {
     // 순서가 중요하다: 서비스는 저장소를, 컨트롤러는 스캐너·서비스를 AppContext 에서 가져간다
     public static void renew(Scanner scanner) {
         AppContext.scanner = scanner;
-        // 저장소 구현체를 여기서 갈아 끼운다 (메모리 → 파일). 컨트롤러·서비스는 바뀌지 않는다
-        wiseSayingRepository = new WiseSayingFileRepository(AppConfig.getDbDirPath());
+        // 저장소 구현체를 여기서 갈아 끼운다 (메모리 → 파일 → MySQL). 컨트롤러·서비스는 바뀌지 않는다
+        wiseSayingRepository = switch (AppConfig.getStorage()) {
+            case DB -> new WiseSayingDbRepository(getSimpleDb(), AppConfig.getDbDirPath());
+            case FILE -> new WiseSayingFileRepository(AppConfig.getDbDirPath());
+        };
         wiseSayingService = new WiseSayingService();
         wiseSayingController = new WiseSayingController();
         systemController = new SystemController();
+    }
+
+    private static SimpleDb simpleDb;
+    private static String simpleDbName;
+
+    // DB 연결 도구는 한 번만 만들어 재사용한다 (접속할 DB 이름이 바뀌면 새로 만든다: 개발 DB ↔ 테스트 DB)
+    public static SimpleDb getSimpleDb() {
+        String dbName = AppConfig.getDbName();
+
+        if (simpleDb == null || !dbName.equals(simpleDbName)) {
+            if (simpleDb != null) simpleDb.close();
+
+            simpleDb = new SimpleDb(
+                    AppConfig.getDbHost(),
+                    AppConfig.getDbPort(),
+                    AppConfig.getDbUsername(),
+                    AppConfig.getDbPassword(),
+                    dbName
+            );
+            simpleDbName = dbName;
+        }
+
+        return simpleDb;
     }
 }

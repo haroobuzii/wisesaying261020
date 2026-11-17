@@ -1,5 +1,6 @@
 package com.back;
 
+import com.back.domain.wiseSaying.repository.WiseSayingDbRepository;
 import com.back.standard.util.TestUtil;
 
 import java.nio.charset.StandardCharsets;
@@ -32,9 +33,12 @@ public final class AppTestRunner {
         return run(input, scanner -> new App(scanner, true).run());
     }
 
-    // 테스트 전용 저장 폴더(test_db/wiseSaying)를 비운다. 매 테스트 전에(@BeforeEach) 호출한다
+    // 테스트 전용 저장 폴더(test_db/wiseSaying)와 테스트 DB 테이블을 비운다. 매 테스트 전에(@BeforeEach) 호출한다
     public static void clearDb() {
         AppConfig.setModeToTest();
         TestUtil.deleteDir(Path.of(AppConfig.getDbDirPath()));
+
+        // 테스트 DB(wiseSaying__test)의 명언 테이블도 비운다 (번호도 1부터 다시)
+        new WiseSayingDbRepository(AppContext.getSimpleDb(), AppConfig.getDbDirPath()).truncate();
     }
 }

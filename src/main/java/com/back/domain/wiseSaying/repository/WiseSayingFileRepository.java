@@ -80,13 +80,8 @@ public class WiseSayingFileRepository implements WiseSayingRepository {
 
     @Override
     public String build() {
-        String json = findAll()
-                .stream()
-                .map(wiseSaying -> indent(toJson(wiseSaying)))
-                .collect(Collectors.joining(",\n", "[\n", "\n]"));
-
         Path dataPath = dirPath.resolve("data.json");
-        writeString(dataPath, json);
+        writeString(dataPath, toJsonArray(findAll()));
 
         return dataPath.toString();
     }
@@ -194,6 +189,14 @@ public class WiseSayingFileRepository implements WiseSayingRepository {
         }
 
         return sb.toString();
+    }
+
+    // 명언 목록 → data.json 형식의 JSON 배열 (DB 저장소의 빌드에서도 재사용)
+    static String toJsonArray(List<WiseSaying> wiseSayings) {
+        return wiseSayings
+                .stream()
+                .map(wiseSaying -> indent(toJson(wiseSaying)))
+                .collect(Collectors.joining(",\n", "[\n", "\n]"));
     }
 
     // data.json 배열 안에 넣을 때 한 단계(공백 2칸) 들여쓴다
